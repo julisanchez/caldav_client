@@ -42,7 +42,7 @@ class CalDavBase {
 
     var response = await request.close();
 
-    return convertResponse(response, uri);
+    return CalResponse.fromHttpResponse(response, uri);
   }
 
   /// REPORT performs a search for all calendar object resources that match a
@@ -73,7 +73,7 @@ class CalDavBase {
 
     var response = await request.close();
 
-    return convertResponse(response, uri);
+    return CalResponse.fromHttpResponse(response, uri);
   }
 
   /// Fetch the contents for the object
@@ -91,7 +91,7 @@ class CalDavBase {
     var response = await request.close();
     await response.pipe(File(savePath).openWrite());
 
-    return convertResponse(response, uri);
+    return CalResponse(url: uri, headers: {}, statusCode: response.statusCode);
   }
 
   /// Update calendar ifMatch the etag
@@ -117,7 +117,7 @@ class CalDavBase {
 
     var response = await request.close();
 
-    return convertResponse(response, uri);
+    return CalResponse.fromHttpResponse(response, uri);
   }
 
   /// Create calendar
@@ -140,7 +140,7 @@ class CalDavBase {
 
     var response = await request.close();
 
-    return convertResponse(response, uri);
+    return CalResponse.fromHttpResponse(response, uri);
   }
 
   /// Delete calendar
@@ -161,7 +161,7 @@ class CalDavBase {
 
     var response = await request.close();
 
-    return convertResponse(response, uri);
+    return CalResponse.fromHttpResponse(response, uri);
   }
 
   String _fullUri(String path) {

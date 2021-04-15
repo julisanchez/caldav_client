@@ -1,8 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:caldav_client/src/cal_response.dart';
-import 'package:xml/xml.dart';
 
 String trim(String str, [String? chars]) {
   var pattern =
@@ -23,29 +18,3 @@ String rtrim(String str, [String? chars]) {
 String join(String path0, String path1) {
   return rtrim(path0, '/') + '/' + ltrim(path1, '/');
 }
-
-Future<CalResponse> convertResponse(
-    HttpClientResponse response, String url) async {
-  var headers = <String, dynamic>{};
-
-  response.headers.forEach((name, values) {
-    headers[name] = values.length == 1 ? values[0] : values;
-  });
-
-  var body = await response.transform(Utf8Decoder()).join();
-
-  XmlDocument? document;
-
-  try {
-    document = XmlDocument.parse(body);
-  } catch (e) {
-    document = null;
-  }
-
-  return CalResponse(
-      url: url,
-      statusCode: response.statusCode,
-      headers: headers,
-      body: document);
-}
-
