@@ -23,7 +23,7 @@ This ctag works like a change id. Every time the ctag has changed, you know some
   var response = await client.initialSync(path);
 ```
 
-Return prop: `getctag` and `calendar-data`.
+Return prop: `getctag` and `displayname`.
 
 ### Get Objects
 

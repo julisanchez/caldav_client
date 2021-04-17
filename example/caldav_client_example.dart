@@ -1,14 +1,53 @@
 import 'package:caldav_client/caldav_client.dart';
+import 'package:caldav_client/src/utils.dart';
 
 void main() async {
   var client = CalDavClient(
-      baseUrl: 'https://192.168.64.2/dav.php',
-      headers: Authorization('juli', '1234').basic(),
-      );
+    baseUrl: 'https://192.168.64.2/',
+    headers: Authorization('juli', '1234').basic(),
+  );
 
-  print(await client.initialSync('/calendars/juli/'));
+  // initialSync
+  var initialSyncResult = await client.initialSync('/dav.php/calendars/juli/');
 
-  var calendar = '''
+  var calendars = <String>[];
+
+  // Print calendars and save calendars path
+  for (var result in initialSyncResult.multistatus!.response) {
+    print('PATH: ${result.href}');
+
+    if (result.propstat.status == 200) {
+      var displayname = result.propstat.prop['displayname'];
+      var ctag = result.propstat.prop['getctag'];
+
+      if (displayname != null && ctag != null) {
+        print('CALENDAR: $displayname');
+        print('CTAG: $ctag');
+
+        calendars.add(result.href);
+      } else {
+        print('This collection is not a calendar');
+      }
+    } else {
+      print('Bad prop status');
+    }
+  }
+
+  // Print calendar objects info
+  if (calendars.isNotEmpty) {
+    var getObjectsResult = await client.getObjects(calendars.first);
+
+    for (var result in getObjectsResult.multistatus!.response) {
+      print('PATH: ${result.href}');
+
+      if (result.propstat.status == 200) {
+        print('CALENDAR DATA:\n${result.propstat.prop['calendar-data']}');
+        print('ETAG: ${result.propstat.prop['getetag']}');
+      }
+      print('Bad prop status');
+    }
+
+    var calendar = '''
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -28,5 +67,10 @@ URL:https://pub.dartlang.org/packages/srt_parser
 END:VEVENT
 END:VCALENDAR''';
 
-  client.createCal('/calendars/juli/default/example.ics', calendar);
+    // Create calendar
+    var createCalResponse =
+        await client.createCal(join(calendars.first, '/example.ics'), calendar);
+
+    if (createCalResponse.statusCode == 201) print('Created');
+  }
 }
