@@ -47,6 +47,26 @@ class CalDavClient extends CalDavBase {
     return report(path, body, depth: depth);
   }
 
+  /// This request will give us every object that's a VCALENDAR object, and its etag in a given time range.
+  Future<CalResponse> getObjectsInTimeRange(String path, DateTime start,
+      DateTime end, {int? depth}) {
+    var body = '''
+    <c:calendar-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
+    <d:prop>
+        <d:getetag />
+        <c:calendar-data />
+    </d:prop>
+    <c:filter>
+        <c:comp-filter name="VCALENDAR">
+            <c:time-range  start="$start" end="$end"/> 
+        </c:comp-filter>
+    </c:filter>
+    </c:calendar-query>
+    ''';
+
+    return report(path, body, depth: depth);
+  }
+
   /// Request the ctag again on the calendar. If the ctag did not change, you still
   /// have the latest copy.
   /// If it did change, you must request all the etags in the entire calendar again.
