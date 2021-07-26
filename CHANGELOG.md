@@ -1,5 +1,5 @@
-## [unreleased]
-### Added
+## 1.1.0
+
 - Functionality to get objects in a given time range
 
 ## 1.0.0

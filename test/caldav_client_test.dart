@@ -9,7 +9,7 @@ void main() {
   group('A group of tests', () {
     late CalDavClient client;
     late MockWebServer mockServer;
-    
+
     final username = 'juli';
     final password = '1234';
 
@@ -52,6 +52,28 @@ void main() {
 
       await client.getObjects('/dav.php/calendars/juli/default/', depth: 1);
 
+      var request = mockServer.takeRequest();
+      expect(request.method, 'REPORT');
+      expect(request.uri.path, '/dav.php/calendars/juli/default/');
+      expect(request.headers['depth'], '1');
+      expect(request.headers['authorization'], isNotNull);
+      expect(request.body, isNotNull);
+    });
+
+    test('Get Objects in time range', () async {
+      var response = MockResponse()
+        ..body = ''
+        ..httpCode = 207;
+
+      mockServer.enqueueResponse(response);
+
+      var now = DateTime.now();
+      var end = DateTime.utc(2021, 11, 9);
+
+      await client.getObjectsInTimeRange(
+          '/dav.php/calendars/juli/default/', now, end,
+          depth: 1);
+      
       var request = mockServer.takeRequest();
       expect(request.method, 'REPORT');
       expect(request.uri.path, '/dav.php/calendars/juli/default/');

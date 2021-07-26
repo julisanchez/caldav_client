@@ -37,6 +37,18 @@ The etag changes when the calendar object changes.
 
 Return prop: `getetag` and `calendar-data`.
 
+### Get objects in time range
+
+To obtain the objects in a time range there is the `getObjectsInTimeRange` method. With this method you will be able to obtain the `calendar-data`, in addition to the `path` and the `etag`.
+
+```dart
+  var now = DateTime.now();
+  var end = DateTime.utc(2021, 11, 9);
+  var response = await client.getObjectsInTimeRange(collectionPath, now, end);
+```
+
+Return prop: `getetag` and `calendar-data`
+
 ### Get Changes
 You must first perform another initial Sync to see if the ctag changed. If it changed, then you can more specifically check each object to see which one changed. For this you must use `getChanges` which returns each `etag`. Remember that each etag changes when the object changes. Besides the etag you should check if there is any url more or some url less.
 
